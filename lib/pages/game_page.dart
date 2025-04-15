@@ -130,4 +130,29 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
+  _showTiedDialog() {
+    showDialog(
+      context: context, 
+      barrierDismissible: false,
+      builder: (context) {
+        return CustomDialog(
+          title: TIED_TITLE, 
+          message: DIALOG_MESSAGE, 
+          onPressed: _onResetGame(),
+        );
+      },
+    );
+  }
+
+  _buildPlayerModel() {
+    return SwitchListTile(
+      title: Text(_controller.isSInglePlayer ? 'Single Player' : 'Two'),
+      secondary: Icon(_controller.isSInglePlayer ? Icons.person : Icons.group),
+      value: _controller.isSInglePlayer,
+      onChanged: (value) {
+        
+      } ,
+    )
+  }
+
 }
