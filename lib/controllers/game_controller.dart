@@ -12,8 +12,8 @@ class GameController {
   List<BoardTile> tiles = [];
   List<int> movesPlayer1 = [];
   List<int> movesPlayer2 = [];
-  PlayerType currentPlayer;
-  bool isSInglePlayer;
+  late PlayerType currentPlayer;
+  late bool isSinglePlayer;
 
   bool get hasMoves => 
       (movesPlayer1.length + movesPlayer2.length) != BOARD_SIZE;
@@ -26,7 +26,7 @@ class GameController {
     movesPlayer1.clear();
     movesPlayer2.clear();
     currentPlayer = PlayerType.player1;
-    isSInglePlayer = false;
+    isSinglePlayer = false;
     tiles = List<BoardTile>.generate(BOARD_SIZE, (index) => BoardTile(index + 1));
   }
 
@@ -73,12 +73,14 @@ class GameController {
   }
 
   int automaticMove() {
-    var list = new List.generate(9, (i) => i + 1);
+    var list = List.generate(9, (i) => i + 1);
     list.removeWhere((element) => movesPlayer1.contains(element));
     list.removeWhere((element) => movesPlayer2.contains(element));
 
-    var random = new Random();
-    var index = random.nextInt(list.length - 1);
-    return tiles.indexWhere((tile) => tile.id == list[index]);
+    if (list.isEmpty) return -1;
+
+    var random = Random();
+    var index = list[random.nextInt(list.length)];
+    return tiles.indexWhere((tile) => tile.id == index);
   }
 }

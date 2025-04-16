@@ -6,7 +6,7 @@ import 'package:jogo_da_velha/enums/winner_type.dart';
 import 'package:jogo_da_velha/widgets/custom_dialog.dart';
 
 class GamePage extends StatefulWidget {
-  const GamePage({super.key});
+  const GamePage({Key? key}) : super(key: key);
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -17,17 +17,11 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
   }
 
   _buildAppBar() {
-    return AppBar(
-      title: Text(GAME_TITLE),
-      centerTitle: true,
-    );
+    return AppBar(title: Text(GAME_TITLE), centerTitle: true);
   }
 
   _buildBody() {
@@ -35,28 +29,27 @@ class _GamePageState extends State<GamePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildBody(),
-          _buildPlayerModel(),
-          _bulidResetButton(),
-        ],
+        children: [_buildBoard(), _buildPlayerMode(), _buildResetButton()],
       ),
     );
   }
 
-  _bulidResetButton() {
-    return RaisedButton(
+  _buildResetButton() {
+    return Padding(
       padding: const EdgeInsets.all(20),
-      child: Text(RESET_BUTTON_LABEL),
-      onPressed: _onResetGame,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(20)),
+        onPressed: _onResetGame,
+        child: Text(RESET_BUTTON_LABEL),
+      ),
     );
   }
 
-  _buildBody() {
+  _buildBoard() {
     return Expanded(
       child: GridView.builder(
         padding: const EdgeInsets.all(10),
-        itemCount:  BOARD_SIZE,
+        itemCount: BOARD_SIZE,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           mainAxisSpacing: 10,
@@ -75,10 +68,7 @@ class _GamePageState extends State<GamePage> {
         child: Center(
           child: Text(
             _controller.tiles[index].symbol,
-            style: TextStyle(
-              fontSize: 72.0,
-              color: Colors.white,
-            ),
+            style: TextStyle(fontSize: 72.0, color: Colors.white),
           ),
         ),
       ),
@@ -106,53 +96,56 @@ class _GamePageState extends State<GamePage> {
     if (winner == WinnerType.none) {
       if (!_controller.hasMoves) {
         _showTiedDialog();
-      } else if (_controller.isSInglePlayer && _controller.currentPlayer == PlayerType.player2) {
+      } else if (_controller.isSinglePlayer &&
+          _controller.currentPlayer == PlayerType.player2) {
         final index = _controller.automaticMove();
         _onMarkTile(index);
       } else {
-        String symbol = winner == WinnerType.player1 ? PLAYER1_SYMBOL : PLAYER2_SYMBOL;
+        String symbol =
+            winner == WinnerType.player1 ? PLAYER1_SYMBOL : PLAYER2_SYMBOL;
         _showWinnerDialog(symbol);
       }
     }
-
-    _showWinnerDialog(String symbol) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return CustomDialog(
-            title: WIN_TITLE.replaceAll('[SYMBOL]', symbol), 
-            message: DIALOG_MESSAGE, 
-            onPressed: _onResetGame(),
-          );
-        },
-      );
-    }
   }
 
-  _showTiedDialog() {
+  _showWinnerDialog(String symbol) {
     showDialog(
-      context: context, 
+      context: context,
       barrierDismissible: false,
       builder: (context) {
         return CustomDialog(
-          title: TIED_TITLE, 
-          message: DIALOG_MESSAGE, 
+          title: WIN_TITLE.replaceAll('[SYMBOL]', symbol),
+          message: DIALOG_MESSAGE,
           onPressed: _onResetGame(),
         );
       },
     );
   }
 
-  _buildPlayerModel() {
-    return SwitchListTile(
-      title: Text(_controller.isSInglePlayer ? 'Single Player' : 'Two'),
-      secondary: Icon(_controller.isSInglePlayer ? Icons.person : Icons.group),
-      value: _controller.isSInglePlayer,
-      onChanged: (value) {
-        
-      } ,
-    )
+  _showTiedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return CustomDialog(
+          title: TIED_TITLE,
+          message: DIALOG_MESSAGE,
+          onPressed: _onResetGame(),
+        );
+      },
+    );
   }
 
+  _buildPlayerMode() {
+    return SwitchListTile(
+      title: Text(_controller.isSinglePlayer ? 'Single Player' : 'Two'),
+      secondary: Icon(_controller.isSinglePlayer ? Icons.person : Icons.group),
+      value: _controller.isSinglePlayer,
+      onChanged: (value) {
+        setState(() {
+          _controller.isSinglePlayer = value;
+        });
+      },
+    );
+  }
 }
