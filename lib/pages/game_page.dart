@@ -91,20 +91,25 @@ class _GamePageState extends State<GamePage> {
     _checkWinner();
   }
 
-  _checkWinner() {
+  void _checkWinner() {
     var winner = _controller.checkWinner();
-    if (winner == WinnerType.none) {
-      if (!_controller.hasMoves) {
-        _showTiedDialog();
-      } else if (_controller.isSinglePlayer &&
-          _controller.currentPlayer == PlayerType.player2) {
-        final index = _controller.automaticMove();
-        _onMarkTile(index);
-      } else {
-        String symbol =
-            winner == WinnerType.player1 ? PLAYER1_SYMBOL : PLAYER2_SYMBOL;
-        _showWinnerDialog(symbol);
-      }
+
+    if (winner == WinnerType.player1 || winner == WinnerType.player2) {
+      String symbol =
+          winner == WinnerType.player1 ? PLAYER1_SYMBOL : PLAYER2_SYMBOL;
+      _showWinnerDialog(symbol);
+      return;
+    }
+
+    if (!_controller.hasMoves) {
+      _showTiedDialog();
+      return;
+    }
+
+    if (_controller.isSinglePlayer &&
+        _controller.currentPlayer == PlayerType.player2) {
+      final index = _controller.automaticMove();
+      _onMarkTile(index);
     }
   }
 
@@ -116,7 +121,7 @@ class _GamePageState extends State<GamePage> {
         return CustomDialog(
           title: WIN_TITLE.replaceAll('[SYMBOL]', symbol),
           message: DIALOG_MESSAGE,
-          onPressed: _onResetGame(),
+          onPressed: _onResetGame,
         );
       },
     );
@@ -130,7 +135,7 @@ class _GamePageState extends State<GamePage> {
         return CustomDialog(
           title: TIED_TITLE,
           message: DIALOG_MESSAGE,
-          onPressed: _onResetGame(),
+          onPressed: _onResetGame,
         );
       },
     );
